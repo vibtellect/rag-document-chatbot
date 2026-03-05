@@ -1,0 +1,27 @@
+name: demo-ci
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate docker compose
+        run: docker compose config
+      - name: Verify README files
+        run: |
+          test -f README.md
+          test -f README_EN.md
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Lint backend
+        run: |
+          pip install ruff
+          ruff check backend/app/
+      - name: Verify .env.example
+        run: test -f .env.example
